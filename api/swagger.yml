@@ -1,0 +1,289 @@
+  openapi: 3.0.1
+  info:
+    title: Student CRUD
+    description: This is the documentation for student CRUD operation
+    contact:
+      email: yadavkumardhiran@gmail.com
+    version: 1.0.0
+  tags:
+    - name: student
+      description: Operations about student
+
+  security:
+    - bearerAuh: []
+
+  paths:
+    /student:
+      get:
+        tags:
+          - student
+        summary: Get all students
+        operationId: getAllstudents
+        responses:
+          '200':
+            description: Retrieved
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    data:
+                      type: array
+                      items:  
+                        $ref: '#/components/schemas/student'
+                    message:
+                      type: string
+                    code:
+                      type: integer
+          '404':
+            description: Not found
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/404NotFound'
+      post:
+        tags:
+          - student
+        summary: Create a student
+        operationId: createstudent          
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/student'
+        responses:
+          '201':
+            description: Created
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    data:
+                      $ref: "#/components/schemas/student"
+                    message:
+                      type: string
+                      example: created
+                    statusCode:
+                      type: integer
+                      example: 201
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/500InternalServerError'
+          '400':
+            description: Bad request
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/400BadRequest'
+      
+    /student/{id}:
+      get:
+        tags:
+          - student
+        summary: Get student by student name
+        operationId: getstudentById
+        parameters:
+          - name: id
+            in: path
+            description: 'The id that needs to be fetched.'
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    data:
+                      $ref: "#/components/schemas/student"
+                    message:
+                      type: string
+                      example: Retrieved
+                    statusCode:
+                      type: integer
+                      example: 200
+          '400':
+            description: Invalid studentname supplied
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/400BadRequest'
+          '404':
+            description: student not found
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/404NotFound'
+      put:
+        tags:
+          - student
+        summary: Updated student
+        description: This can only be done by the logged in student.
+        operationId: updatestudent
+        parameters:
+          - name: id
+            in: path
+            description: id that need to be updated
+            required: true
+            schema:
+              type: string
+          - name: data
+            in: header
+            description: values that need to be put
+            required: true
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                phone:
+                  type: string
+                age:
+                  type: integer
+            example:
+              {
+                "name" : "John",
+                "email" : "john67@example.com",
+                "phone" : "3456789987654",
+                "age" : 23
+            }
+        requestBody:
+          description: Updated student object
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/student'
+          required: true
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    data:
+                      $ref: "#/components/schemas/student"
+                    message:
+                      type: string
+                      example: created
+                    statusCode:
+                      type: integer
+                      example: 201
+          '500':
+            description: Invalid studentname supplied
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/500InternalServerError'
+          '400':
+            description: Bad request
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/400BadRequest'
+      delete:
+        tags:
+          - student
+        summary: Delete student
+        description: This can only be done by the logged in student.
+        operationId: deletestudent
+        parameters:
+          - name: id
+            in: path
+            description: The id that needs to be deleted
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    data:
+                      type: integer
+                      example: 2
+                    message:
+                      type: string
+                      example: student deleted
+                    statusCode:
+                      type: integer
+                      example: 201
+          '500':
+            description: Invalid studentname supplied
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/500InternalServerError'
+          '400':
+            description: student not found
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/400BadRequest'
+  components:
+    securitySchemes:
+      bearerAuh:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT 
+    schemas:
+      student:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            example: 1
+          studentname:
+            type: string
+            example: John
+          email:
+            type: string
+            example: 'john892example.com'
+          phone:
+            type: string
+            example: "3456789987654"
+          age:
+            type: integer
+            format: int32
+            example: 21
+      400BadRequest:
+        type: object
+        properties:
+          errCode  :
+            type: integer
+            example: 400
+          errMsg:
+            type: string
+            example: "error bad requests"
+      404NotFound:
+        type: object
+        properties:
+          errCode  :
+            type: integer
+            example: 404
+          errMsg:
+            type: string
+            example: "error not found"
+      500InternalServerError:
+        type: object
+        properties:
+          errCode  :
+            type: integer
+            example: 200
+          errMsg:
+            type: string
+            example: "error bad requests"
